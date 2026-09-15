@@ -1,4 +1,4 @@
-# java-spring-microservices
+# java-spring-microservices-mesh
 
 Java-Spring Cloud based event driven microservices based on [this](https://github.com/sbruksha/event-driven-microservices-platform) repository and [this](https://www.linkedin.com/pulse/event-driven-microservices-architecture-using-spring-cloud-bruksha/) article.
 
