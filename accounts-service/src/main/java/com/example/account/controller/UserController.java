@@ -1,22 +1,22 @@
 package com.example.account.controller;
 
 import com.example.account.config.AppProperties;
+import com.example.account.dto.UserCreateRequest;
+import com.example.account.dto.UserResponse;
+import com.example.account.exception.UserAlreadyExistsException;
+import com.example.account.exception.UserNotFoundException;
 import com.example.account.model.User;
 import com.example.account.service.PublisherService;
 import com.example.account.service.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -31,41 +31,32 @@ public class UserController {
 		this.appProperties = appProperties;
 	}
 
-	// Strongly-typed immutable API response record
-	public record ApiResponse<T>(String status, T message) {
-		public static <T> ApiResponse<T> success(T data) {
-			return new ApiResponse<>("success", data);
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	public UserResponse createUser(@Valid @RequestBody UserCreateRequest request) {
+		log.info("Request received to create user with email: {}", request.email());
+
+		if (userService.existsByEmail(request.email())) {
+			throw new UserAlreadyExistsException("Email already registered: " + request.email());
 		}
 
-		public static ApiResponse<String> error(String errorMessage) {
-			return new ApiResponse<>("error", errorMessage);
-		}
-	}
-
-	@PostMapping(path = "/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ApiResponse<?>> createUser(@RequestBody User user) {
-		log.info("Create user request - {}", user);
-
-		if (userService.existsByEmail(user.getEmail())) {
-			return ResponseEntity.ok(ApiResponse.error("user email already exists, please change and try again"));
+		if (userService.existsByMobile(request.mobile())) {
+			throw new UserAlreadyExistsException("Mobile number already registered: " + request.mobile());
 		}
 
-		if (userService.existsByMobile(user.getMobile())) {
-			return ResponseEntity.ok(ApiResponse.error("user mobile already exists, please change and try again"));
-		}
-
+		User user = request.toEntity();
 		user.setEmailVerified(false);
-		var savedUser = userService.saveUser(user);
 
+		User savedUser = userService.saveUser(user);
 		publisherService.publishUserCreateEvent(appProperties.creation().routingKey(), savedUser);
 
-		return ResponseEntity.ok(ApiResponse.success("User created successfully!!!"));
+		return UserResponse.fromEntity(savedUser);
 	}
 
-	@GetMapping(path = "/users/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public Object getUserDetails(@PathVariable(name = "id") long userId) {
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserResponse getUserDetails(@PathVariable("id") long userId) {
 		return userService.findById(userId)
-				.map(user -> ResponseEntity.ok(ApiResponse.success(user)))
-				.orElseGet(() -> ResponseEntity.notFound().build());
+				.map(UserResponse::fromEntity)
+				.orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 	}
 }

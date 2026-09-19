@@ -36,7 +36,7 @@ public class UserService {
 		return userRepository.existsByEmail(email);
 	}
 
-	public boolean existsByMobile(Long mobile) {
+	public boolean existsByMobile(String mobile) {
 		return userRepository.existsByMobile(mobile);
 	}
 }

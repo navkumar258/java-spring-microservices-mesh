@@ -53,7 +53,7 @@ v
 
 ## 🚀 Tech Stack & Requirements
 
-* **JDK 25** (Eclipse Temurin Base, Generational ZGC enabled)
+* **JDK 25** (Eclipse Temurin Base)
 * **Spring Boot 4.1+** & **Spring Cloud**
 * **Apache Maven 3.9+**
 * **Docker & Docker Compose v2+**

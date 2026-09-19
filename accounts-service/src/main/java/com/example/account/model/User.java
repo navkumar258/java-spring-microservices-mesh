@@ -30,7 +30,7 @@ public class User {
 	private String email;
 
 	@Column(name = "mobile")
-	private Long mobile;
+	private String mobile;
 
 	@Column(name = "dob")
 	private LocalDate dob;
@@ -41,7 +41,7 @@ public class User {
 	public User() {
 	}
 
-	public User(Long id, String name, String email, Long mobile, LocalDate dob, boolean emailVerified) {
+	public User(Long id, String name, String email, String mobile, LocalDate dob, boolean emailVerified) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
@@ -74,11 +74,11 @@ public class User {
 		this.email = email;
 	}
 
-	public Long getMobile() {
+	public String getMobile() {
 		return mobile;
 	}
 
-	public void setMobile(Long mobile) {
+	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
 

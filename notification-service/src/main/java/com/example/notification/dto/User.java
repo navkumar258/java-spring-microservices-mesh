@@ -1,7 +1,6 @@
 package com.example.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 
@@ -11,5 +10,5 @@ public record User(
 		String email,
 		Long mobile,
 		LocalDate dob,
-		@JsonProperty("isEmailVerified") boolean isEmailVerified
+		boolean emailVerified
 ) {}
