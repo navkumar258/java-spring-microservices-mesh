@@ -1,0 +1,39 @@
+# Server & Application Config
+spring:
+  application:
+    name: accounts-service
+  jackson:
+    date-format: yyyy-MM-dd
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:accountdb;DB_CLOSE_DELAY=-1.;DB_CLOSE_ON_EXIT=FALSE;TRACE_LEVEL_FILE=0
+  jpa:
+    hibernate:
+      ddl-auto: update
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8081
+  http2:
+    enabled: true
+
+# Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+# Custom RabbitMQ Properties
+rabbitmq:
+  user:
+    exchange-name: x.user.topic
+    creation:
+      routing-key: user.created

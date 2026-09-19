@@ -1,0 +1,45 @@
+# Server & Application Config
+spring:
+  application:
+    name: notification-service
+
+  # Mail Config
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test
+    password: test123!
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # RabbitMQ Config
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+server:
+  port: 8084
+  http2:
+    enabled: true
+
+# Eureka Config
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+# Custom Application Properties
+rabbitmq:
+  user:
+    exchange-name: x.user.topic
+    creation:
+      routing-key: user.created
+      queue-name: q.user.created
