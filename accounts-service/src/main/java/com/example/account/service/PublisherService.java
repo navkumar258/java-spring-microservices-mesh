@@ -1,6 +1,6 @@
 package com.example.account.service;
 
-import com.example.account.model.User;
+import com.example.account.dto.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.TopicExchange;
@@ -20,7 +20,7 @@ public class PublisherService {
 		this.exchange = exchange;
 	}
 
-	public void publishUserCreateEvent(String routingKey, User message) {
+	public void publishUserCreateEvent(String routingKey, UserResponse message) {
 		log.info("Publishing user creation message: {}", message);
 		rabbitTemplate.convertAndSend(exchange.getName(), routingKey, message);
 	}

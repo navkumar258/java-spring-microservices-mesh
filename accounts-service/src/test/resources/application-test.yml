@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    discovery:
+      enabled: false
+    eureka:
+      client:
+        enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false

@@ -7,6 +7,7 @@ public record UserResponse(
 		String name,
 		String email,
 		String mobile,
+		String dob,
 		boolean emailVerified
 ) {
 	public static UserResponse fromEntity(User user) {
@@ -15,6 +16,7 @@ public record UserResponse(
 				user.getName(),
 				user.getEmail(),
 				user.getMobile(),
+				user.getDob().toString(),
 				user.isEmailVerified()
 		);
 	}

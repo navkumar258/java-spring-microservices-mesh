@@ -1,5 +1,8 @@
 package com.example.account.service;
 
+import com.example.account.dto.UserCreateRequest;
+import com.example.account.dto.UserResponse;
+import com.example.account.exception.UserAlreadyExistsException;
 import com.example.account.model.User;
 import com.example.account.repository.UserRepository;
 import org.slf4j.Logger;
@@ -21,22 +24,30 @@ public class UserService {
 		this.userRepository = userRepository;
 	}
 
-	public Optional<User> findById(Long id) {
-		log.info("Get user details for id: {}", id);
-		return userRepository.findById(id);
-	}
-
 	@Transactional
-	public User saveUser(User user) {
-		log.info("Saving new user: {}", user.getEmail());
-		return userRepository.save(user);
+	public UserResponse registerUser(UserCreateRequest request) {
+		log.info("Registering new user with email: {}", request.email());
+
+		if (userRepository.existsByEmail(request.email())) {
+			throw new UserAlreadyExistsException("Email already registered: " + request.email());
+		}
+
+		if (userRepository.existsByMobile(request.mobile())) {
+			throw new UserAlreadyExistsException("Mobile number already registered: " + request.mobile());
+		}
+
+		User user = request.toEntity();
+		user.setEmailVerified(false);
+
+		User savedUser = userRepository.save(user);
+		log.info("User registered successfully with ID: {}", savedUser.getId());
+
+		return UserResponse.fromEntity(savedUser);
 	}
 
-	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
-	}
-
-	public boolean existsByMobile(String mobile) {
-		return userRepository.existsByMobile(mobile);
+	public Optional<UserResponse> findById(Long id) {
+		log.debug("Fetching user details for ID: {}", id);
+		return userRepository.findById(id)
+				.map(UserResponse::fromEntity);
 	}
 }
